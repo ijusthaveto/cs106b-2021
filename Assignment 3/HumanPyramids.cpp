@@ -1,27 +1,42 @@
 #include "HumanPyramids.h"
 #include "error.h"
+#include "hashmap.h"
+#include "gridlocation.h"
+
 using namespace std;
 
-bool inBounds(int row, int col, int height) {
-    return (row >= 0 && row < height) && (col >= 0 && col <= row);
+bool inBounds(const GridLocation & location, int height) {
+    return (location.row >= 0 && location.row < height) &&
+           (location.col >= 0 && location.col <= location.row);
 }
-double weightOnBackOf(int row, int col, int pyramidHeight) {
-    if (!inBounds(row, col, pyramidHeight)) {
-        error("Out of bounds!");
+
+double weightOnBackRec(int row, int col, int pyramidHeight, HashMap<GridLocation, double> & table) {
+    if (!inBounds({row, col}, pyramidHeight)) {
+        error("Out out bounds!");
     }
 
-    if (row == 0 && col == 0) {
+    if (row == 0) {
         return 0;
+    } else if (table.containsKey({row, col})) {
+        return table.get({row, col});
     } else {
-        if (inBounds(row - 1, col - 1, pyramidHeight) && col == row) {
-            return 80 + weightOnBackOf(row - 1, col - 1, pyramidHeight) * 0.5;
-        } else if (inBounds(row - 1, col, pyramidHeight) && col == 0) {
-            return 80 + weightOnBackOf(row - 1, col, pyramidHeight) * 0.5;
+        if (col == 0) {
+            table.put({row, col}, weightOnBackRec(row - 1, col, pyramidHeight, table) * 0.5 + 80);
+        } else if (row == col) {
+            table.put({row, col}, weightOnBackRec(row - 1, col - 1, pyramidHeight, table) * 0.5 + 80);
         } else {
-            return weightOnBackOf(row - 1, col - 1, pyramidHeight) * 0.5 +
-                   weightOnBackOf(row - 1, col, pyramidHeight) * 0.5 + 160;
+            table.put({row, col}, weightOnBackRec(row - 1, col - 1, pyramidHeight, table) * 0.5 +
+                                  weightOnBackRec(row - 1, col, pyramidHeight, table) * 0.5 + 160);
         }
+
+        return table.get({row, col});
     }
+}
+
+
+double weightOnBackOf(int row, int col, int pyramidHeight) {
+    HashMap<GridLocation, double> table;
+    return weightOnBackRec(row, col, pyramidHeight, table);
 }
 
 
@@ -47,12 +62,6 @@ PROVIDED_TEST("Function reports errors in invalid cases.") {
 }
 
 PROVIDED_TEST("Stress test: Memoization is implemented (should take under a second)") {
-    /* TODO: Yes, we are asking you to make a change to this test case! Delete the
-     * line immediately after this one - the one that starts with SHOW_ERROR - once
-     * you have implemented memoization to test whether it works correctly.
-     */
-    SHOW_ERROR("This test is configured to always fail until you delete this line from\n         HumanPyramids.cpp. Once you have implemented memoization and want\n         to check whether it works correctly, remove the indicated line.");
-
     /* Do not delete anything below this point. :-) */
 
     /* This will take a LONG time to complete if memoization isn't implemented.

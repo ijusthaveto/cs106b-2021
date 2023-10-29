@@ -1,0 +1,34 @@
+Put your answers to the debugging questions from Problem One in this file.
+
+Q1:
+
+finish: 'C'
+numDisks: 5
+start: 'A'
+temp: 'B'
+totalMoves: 456
+
+Q2:
+
+- solveTowersOfHanoi was defined in the TowersOfHanoi.cpp.
+- The name of that function is solveTowersOfHanoi.
+
+Q3:
+
+There're 32 total moves.
+
+Q4:
+
+The value of the totalMoves variable is 15.
+
+Q5:
+
+The smallest possible input that triggers the bug is "ab".
+
+Q6:
+
+Set<string> thisOption = permutationsRec(remaining, chosen += ch);
+
+Q7:
+
+The value of the chosen variable was mutated when the program invoked recursion.
